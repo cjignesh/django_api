@@ -22,7 +22,7 @@ def student_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # return Response('Not Authorised',status=status.HTTP_400_BAD_REQUEST) - To diasble post and give error
 
-@api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['GET', 'PUT', 'DELETE', 'PATCH'])
 def stuent_detail(request, pk):
     try:
         student = Student.objects.get(pk=pk)
@@ -43,4 +43,11 @@ def stuent_detail(request, pk):
     elif request.method == 'DELETE':
         student.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    elif request.method == 'PATCH':
+        serializer = StudentSerializer(student, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
